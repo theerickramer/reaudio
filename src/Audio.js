@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import MultiSlider from 'multi-slider';
 
 class Audio extends Component {
@@ -13,11 +13,11 @@ class Audio extends Component {
       loopDuration: 0,
       loopStart: 0,
       loopEnd: 0,
-      src: 'robotic02_1.wav'
+      src: 'robotic02_1.wav',
     };
     // this.audioContext.addEventListener('statechange', () => console.log(this.audioContext.currentTime))
   }
-  
+
   getAudio() {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -29,7 +29,7 @@ class Audio extends Component {
           this.audio.buffer = this.buffer;
           this.startOffset = 0;
           this.loaded = true;
-          this.setState({ loopDuration: this.buffer.duration });
+          this.setState({loopDuration: this.buffer.duration});
           resolve(this.buffer);
         });
       };
@@ -43,21 +43,23 @@ class Audio extends Component {
     } else {
       this.pause();
     }
-    this.setState({ isPlaying: bool });
+    this.setState({isPlaying: bool});
   }
 
   play() {
-    this.audio = this.audioContext.createBufferSource();
-    this.volume = this.audioContext.createGain();
-    this.audio.connect(this.volume);
-    this.volume.connect(this.audioContext.destination);
+    this.audioContext.resume().then(() => {
+      this.audio = this.audioContext.createBufferSource();
+      this.volume = this.audioContext.createGain();
+      this.audio.connect(this.volume);
+      this.volume.connect(this.audioContext.destination);
 
-    if (!this.loaded) {
-      this.getAudio().then(() => this.startLoop());
-    } else {
-      this.audio.buffer = this.buffer;
-      this.startLoop();
-    }
+      if (!this.loaded) {
+        this.getAudio().then(() => this.startLoop());
+      } else {
+        this.audio.buffer = this.buffer;
+        this.startLoop();
+      }
+    });
   }
 
   stop() {
@@ -76,7 +78,7 @@ class Audio extends Component {
 
   setDetune(e) {
     const detuneValue = e.target.value;
-    this.setState({ detuneValue }, () => this.detune());
+    this.setState({detuneValue}, () => this.detune());
   }
 
   detune() {
@@ -85,7 +87,7 @@ class Audio extends Component {
 
   setPlaybackRate(e) {
     const playbackRate = e.target.value;
-    this.setState({ playbackRate }, () => this.playbackRate());
+    this.setState({playbackRate}, () => this.playbackRate());
   }
 
   playbackRate() {
@@ -104,9 +106,7 @@ class Audio extends Component {
   setLoop([loopStart, loopDuration, loopEnd]) {
     this.audio.stop();
     this.startOffset = loopStart;
-    this.setState({ loopStart, loopDuration, loopEnd }, () =>
-      this.play()
-    );
+    this.setState({loopStart, loopDuration, loopEnd}, () => this.play());
   }
 
   render() {
@@ -142,7 +142,7 @@ class Audio extends Component {
           values={[
             this.state.loopStart,
             this.state.loopDuration,
-            this.state.loopEnd
+            this.state.loopEnd,
           ]}
           onChange={e => this.setLoop(e)}
           handleSize={0.5}
